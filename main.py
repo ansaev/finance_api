@@ -46,7 +46,9 @@ async def initialize_db(db):
             amount decimal not null,
             from_wallet integer,
             to_wallet integer not null,
-            created_at timestamp not null
+            created_at timestamp not null,
+            FOREIGN KEY (from_wallet) REFERENCES wallet(id) ON DELETE CASCADE,
+            FOREIGN KEY (to_wallet) REFERENCES wallet(id) ON DELETE CASCADE
         );
         """)
 
@@ -108,5 +110,6 @@ async def transfer(wallet_id, form: TransferForm, db=Depends(db.connection)):
         raise HTTPException(status_code=500, detail=ex.__str__())
 
 
+# for debug
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
