@@ -9,10 +9,10 @@ class Wallet(BaseModel):
     balance: Decimal
     created_at: datetime
 
+
 class Transaction(BaseModel):
     id: int
     from_wallet: Optional[int]
     to_wallet: int
     amount: Decimal
     created_at: datetime
-

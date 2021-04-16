@@ -10,7 +10,6 @@ class Repo(WaletRepoInterface):
     def __init__(self, db):
         self.db = db
 
-
     async def transfer(self, from_acc: Optional[int], to_acc: int, amount: Decimal) -> Transaction:
         from_locked = False
         to_locked = False
@@ -59,7 +58,6 @@ class Repo(WaletRepoInterface):
 
         return Transaction(id=tx_id, amount=amount, created_at=created_at, from_wallet=from_acc, to_wallet=to_acc)
 
-
     async def create_wallet(self) -> Wallet:
         balance = Decimal(0)
         created_at = datetime.now()
@@ -68,7 +66,6 @@ class Repo(WaletRepoInterface):
             wallet_id = await self.db.fetchval("SELECT currval(pg_get_serial_sequence('wallet','id'))")
         return Wallet(id=wallet_id, balance=balance, created_at=created_at)
 
-
-    async def get_wallet(self, wallet_id:int) -> Wallet:
+    async def get_wallet(self, wallet_id: int) -> Wallet:
         obj = await self.db.fetchrow("SELECT id, balance, created_at FROM wallet where id = $1", wallet_id)
         return obj if obj is None else Wallet(**dict(obj))
