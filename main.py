@@ -6,7 +6,7 @@ from fastapi_asyncpg import configure_asyncpg
 from pydantic import BaseModel
 
 from domain.wallet import Transaction, Wallet
-from wallet.repo import Repo
+from postgres_repo.repo import Repo
 from wallet.wallet import WalletService
 
 app = FastAPI(title="Finance API", description="Test project, wallets, transfers, balances",version="1.0.0", )
