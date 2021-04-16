@@ -1,3 +1,15 @@
 # Introduction
-This is a test service, that allow you:
- to create wallet, to top-up walet, to trasnfer money from one wallet to another,
+
+This is a test service, that allow you to:
+ - create a wallet
+ - top-up a walet
+ - trasnfer money from one wallet to another
+ - view balance on a wallet by it`s ID
+
+# Instalation
+
+```
+$ docker-compose up -d db
+$ docker-compose up app
+```
+
