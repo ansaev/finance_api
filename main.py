@@ -1,6 +1,6 @@
-from typing import Optional
-
 from decimal import Decimal
+
+import uvicorn
 from fastapi import FastAPI, Depends
 from fastapi_asyncpg import configure_asyncpg
 from pydantic import BaseModel
@@ -20,7 +20,7 @@ async def initialize_db(db):
         CREATE TABLE IF NOT EXISTS wallet (
             id serial primary key,
             balance decimal not null,
-            created_at time not null
+            created_at timestamp not null
         );
         """)
     await db.execute(
@@ -30,7 +30,7 @@ async def initialize_db(db):
             amount decimal not null,
             from_wallet integer,
             to_wallet integer not null,
-            created_at time not null
+            created_at timestamp not null
         );
         """)
 
@@ -86,3 +86,6 @@ async def top_up_wallet(wallet_id, form: TransferForm, db=Depends(db.connection)
         return transaction.dict()
     except Exception as ex:
         return {"status": 500, "error": ex.__str__()}
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)
