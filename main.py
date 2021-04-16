@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+import os
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi_asyncpg import configure_asyncpg
@@ -9,9 +10,15 @@ from domain.wallet import Transaction, Wallet
 from postgres_repo.repo import Repo
 from wallet.wallet import WalletService
 
-app = FastAPI(title="Finance API", description="Test project, wallets, transfers, balances",version="1.0.0", )
-db = configure_asyncpg(app, "postgresql://finance:finance@0.0.0.0:5432/finance")
-
+app = FastAPI(title="Finance API", description="Test project, wallets, transfers, balances", version="1.0.0", )
+db = configure_asyncpg(app,
+                       "postgresql://{db_user}:{db_pass}@{host}:{port}/{db_name}".format(
+                           host=os.getenv("DB_HOST"),
+                           port=os.getenv("DB_PORT"),
+                           db_name=os.getenv("POSTGRES_DB"),
+                           db_user=os.getenv("POSTGRES_USER"),
+                           db_pass=os.getenv("POSTGRES_PASSWORD"), )
+                       )
 
 tags_metadata = [
     {
@@ -19,6 +26,7 @@ tags_metadata = [
         "description": "Operations with wallets. Top-up, create, transfer, get.",
     },
 ]
+
 
 # TODO: remove before using on prod
 @db.on_init
@@ -43,7 +51,7 @@ async def initialize_db(db):
         """)
 
 
-@app.get("/wallets/{wallet_id}", tags=["wallets",], response_model=Wallet)
+@app.get("/wallets/{wallet_id}", tags=["wallets", ], response_model=Wallet)
 async def get_wallet(wallet_id, db=Depends(db.connection)):
     repo = Repo(db)
     service = WalletService(repo)
@@ -55,7 +63,7 @@ async def get_wallet(wallet_id, db=Depends(db.connection)):
     return wallet.dict()
 
 
-@app.post("/wallets", tags=["wallets",], response_model=Wallet)
+@app.post("/wallets", tags=["wallets", ], response_model=Wallet)
 async def create_wallet(db=Depends(db.connection)):
     repo = Repo(db)
     service = WalletService(repo)
@@ -71,7 +79,7 @@ class TopUpForm(BaseModel):
     amount: Decimal
 
 
-@app.post("/wallets/{wallet_id}/top-up", tags=["wallets",], response_model=Transaction)
+@app.post("/wallets/{wallet_id}/top-up", tags=["wallets", ], response_model=Transaction)
 async def top_up_wallet(wallet_id, form: TopUpForm, db=Depends(db.connection)):
     repo = Repo(db)
     service = WalletService(repo)
@@ -88,7 +96,7 @@ class TransferForm(BaseModel):
     to_wallet: int
 
 
-@app.post("/wallets/{wallet_id}/transfer", tags=["wallets",], response_model=Transaction)
+@app.post("/wallets/{wallet_id}/transfer", tags=["wallets", ], response_model=Transaction)
 async def transfer(wallet_id, form: TransferForm, db=Depends(db.connection)):
     repo = Repo(db)
     service = WalletService(repo)
